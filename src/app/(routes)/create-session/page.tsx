@@ -7,7 +7,8 @@ import {
   usePublicClient,
   useWriteContract,
 } from "wagmi";
-import { createCreatorClient } from "chora-protocol-sdk";
+import { createCreatorClient } from "cc-protocol-sdk";
+import { TransactionReceipt } from "viem";
 
 function Page() {
   const [name, setName] = useState("");
@@ -18,7 +19,7 @@ function Page() {
   const [contractAddress, setContractAddress] = useState(null);
   const [contractUri, setContractUri] = useState<string | null>(null);
 
-  const { writeContract } = useWriteContract();
+  const { writeContractAsync } = useWriteContract();
   const { address } = useAccount();
   const chainId = useChainId();
   const publicClient = usePublicClient();
@@ -80,34 +81,43 @@ function Page() {
 
       await handleSubmit(); // Wait for handleSubmit to complete
 
-      //   if (!contractUri) {
-      //     console.error("Contract URI not set. Aborting contract creation.");
-      //     setIsLoading(false);
-      //     return;
-      //   }
-
       const creatorClient = createCreatorClient({ chainId, publicClient });
 
-      try {
-        console.log("Creating contract with URI:", contractUri);
-        const { parameters, contractAddress } = await creatorClient.create1155({
-          contract: {
-            name: name,
-            uri: contractUri || "",
-          },
-          token: {
-            tokenMetadataURI:
-              "ipfs://bafkreibp5oimmwewsutwlkk4yriqxhcldzuj4hrwchq5fo4shamkw7gpue",
-          },
-          account: address,
-        });
-        console.log("Contract created with parameters:", parameters);
+      console.log("Creating contract with URI:", contractUri);
+      const { parameters, contractAddress } = await creatorClient.create1155({
+        contract: {
+          name: name,
+          uri: contractUri || "",
+        },
+        token: {
+          tokenMetadataURI:
+            "ipfs://bafkreibp5oimmwewsutwlkk4yriqxhcldzuj4hrwchq5fo4shamkw7gpue",
+        },
+        account: address,
+      });
+      console.log("Contract created with parameters:", parameters);
 
-        writeContract(parameters);
+      try {
+        // Send the transaction and get the transaction hash
+        const txHash: string = await writeContractAsync(parameters);
+
+        console.log("Transaction Hash:", txHash);
+
+        // Retrieve the transaction receipt
+        const transactionReceipt: TransactionReceipt =
+          await publicClient.getTransactionReceipt({
+            hash: txHash,
+          });
+        console.log("Transaction Receipt:", transactionReceipt);
+
+        // Access the event logs
+        const eventLogs = transactionReceipt.logs;
+        console.log("Event Logs:", eventLogs);
+
         setContractAddress(contractAddress);
         console.log("Contract address set to:", contractAddress);
       } catch (error) {
-        console.error("Error creating contract:", error);
+        console.error("Error handling transaction:", error);
       } finally {
         setIsLoading(false);
         console.log("Contract creation process completed.");
@@ -116,7 +126,6 @@ function Page() {
       console.error("Chain ID, public client, or address is missing.");
     }
   };
-
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
@@ -138,7 +147,8 @@ function Page() {
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-gray-700">
+              className="block text-sm font-medium text-gray-700"
+            >
               Name:
             </label>
             <input
@@ -153,7 +163,8 @@ function Page() {
           <div>
             <label
               htmlFor="description"
-              className="block text-sm font-medium text-gray-700">
+              className="block text-sm font-medium text-gray-700"
+            >
               Description:
             </label>
             <textarea
@@ -168,7 +179,8 @@ function Page() {
           <div>
             <label
               htmlFor="image"
-              className="block text-sm font-medium text-gray-700">
+              className="block text-sm font-medium text-gray-700"
+            >
               Choose Image:
             </label>
             <input
@@ -189,7 +201,8 @@ function Page() {
         <button
           onClick={handleCreateContract}
           disabled={loading}
-          className="mt-4 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50">
+          className="mt-4 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+        >
           {loading ? "Creating Contract..." : "Create Contract"}
         </button>
       </div>
