@@ -7,7 +7,10 @@ import {
   usePublicClient,
   useWriteContract,
 } from "wagmi";
-import { createCreatorClient } from "chora-protocol-sdk";
+import { createCreatorClient } from "cc-protocol-sdk";
+import { TransactionReceipt } from "viem";
+import { Router } from "next/router";
+// import { useRouter } from "next/navigation";
 
 function Page() {
   const [name, setName] = useState("");
@@ -17,8 +20,9 @@ function Page() {
   const [jsonUri, setJsonUri] = useState("");
   const [contractAddress, setContractAddress] = useState(null);
   const [contractUri, setContractUri] = useState<string | null>(null);
+  // const router = useRouter();
 
-  const { writeContract } = useWriteContract();
+  const { writeContractAsync } = useWriteContract();
   const { address } = useAccount();
   const chainId = useChainId();
   const publicClient = usePublicClient();
@@ -80,34 +84,60 @@ function Page() {
 
       await handleSubmit(); // Wait for handleSubmit to complete
 
-      //   if (!contractUri) {
-      //     console.error("Contract URI not set. Aborting contract creation.");
-      //     setIsLoading(false);
-      //     return;
-      //   }
-
       const creatorClient = createCreatorClient({ chainId, publicClient });
 
-      try {
-        console.log("Creating contract with URI:", contractUri);
-        const { parameters, contractAddress } = await creatorClient.create1155({
-          contract: {
-            name: name,
-            uri: contractUri || "",
-          },
-          token: {
-            tokenMetadataURI:
-              "ipfs://bafkreibp5oimmwewsutwlkk4yriqxhcldzuj4hrwchq5fo4shamkw7gpue",
-          },
-          account: address,
-        });
-        console.log("Contract created with parameters:", parameters);
+      console.log("Creating contract with URI:", contractUri);
+      const { parameters, contractAddress } = await creatorClient.create1155({
+        contract: {
+          name: name,
+          uri: contractUri || "",
+        },
+        token: {
+          tokenMetadataURI:
+            "ipfs://bafkreibp5oimmwewsutwlkk4yriqxhcldzuj4hrwchq5fo4shamkw7gpue",
+        },
+        account: address,
+      });
+      console.log("Contract created with parameters:", parameters);
 
-        writeContract(parameters);
+      try {
+        // Send the transaction and get the transaction hash
+        const txHash: string = await writeContractAsync(parameters);
+
+        console.log("Transaction Hash:", txHash);
+
+        // // Retrieve the transaction receipt
+        // const transactionReceipt: TransactionReceipt =
+        //   await publicClient.getTransactionReceipt({
+        //     hash: txHash,
+        //   });
+        // console.log("Transaction Receipt:", transactionReceipt);
+
+        // Wait for the transaction to be processed
+        await new Promise((resolve) => setTimeout(resolve, 60000)); // Wait for 60 seconds (1 minute)
+
+        // Retrieve the transaction receipt
+        const transactionReceipt: TransactionReceipt =
+          await publicClient.getTransactionReceipt({
+            hash: txHash,
+          });
+
+        console.log("Transaction Receipt:", transactionReceipt);
+
+        // Access the event logs
+        const eventLogs = transactionReceipt.logs;
+        console.log("Event Logs:", eventLogs);
+        console.log("Extract address from event Logs:", eventLogs[0].address);
+
         setContractAddress(contractAddress);
+        /*
+         if (eventLogs[0].address) {
+          router.push(`/watch/${eventLogs[0].address}`);
+        }
+        */
         console.log("Contract address set to:", contractAddress);
       } catch (error) {
-        console.error("Error creating contract:", error);
+        console.error("Error handling transaction:", error);
       } finally {
         setIsLoading(false);
         console.log("Contract creation process completed.");
@@ -116,7 +146,6 @@ function Page() {
       console.error("Chain ID, public client, or address is missing.");
     }
   };
-
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {

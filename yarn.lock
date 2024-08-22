@@ -3898,12 +3898,18 @@ caniuse-lite@^1.0.30001579:
     preact "^10.16.0"
     sha.js "^2.4.11"
 
-cc-sdk@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/cc-sdk/-/cc-sdk-1.0.0.tgz#ce77c6408d9162ddffb2a2b810ff11b29f627b7f"
-  integrity sha512-bm7FcRn7r9fmi+99GU/G3OzqGG8Yb6RdUKBytC1I+6yeUVih9cbIdZzj/cuS2qcFgCTIkz6grmW3dIDcoxocGQ==
+cc-protocol-deployments@^0.1.15:
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/cc-protocol-deployments/-/cc-protocol-deployments-0.1.15.tgz#d7f578f0bc2a5897203138df8da4c2c789b8164f"
+  integrity sha512-aBRdtSBFvqy0NDH2fNtNDRJX4IgWOkseKe/gvXWSnnr9S+UGF0qWzPEp2MHdyqEuCEKWec4ecM75YA29OXiR7A==
+
+cc-protocol-sdk@^0.7.4:
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/cc-protocol-sdk/-/cc-protocol-sdk-0.7.4.tgz#0f52b6a2ab120dcbe5aeac5172585af2f2d6b333"
+  integrity sha512-3Nshcb7n2LuHTaOn1HaLyOj6NbdUumFafTF88OfarN8Jo4VskrfzNscX8Th/ZchghUJajR91mRio5T0gO5UWhw==
   dependencies:
-    js-cookie "^3.0.1"
+    cc-protocol-deployments "^0.1.15"
+    semver "^7.6.2"
 
 chalk@^4.1.1:
   version "4.1.2"
@@ -4959,11 +4965,6 @@ joi@^17.7.0:
     "@sideway/address" "^4.1.5"
     "@sideway/formula" "^3.0.1"
     "@sideway/pinpoint" "^2.0.0"
-
-js-cookie@^3.0.1:
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/js-cookie/-/js-cookie-3.0.5.tgz#0b7e2fd0c01552c58ba86e0841f94dc2557dcdbc"
-  integrity sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==
 
 "js-tokens@^3.0.0 || ^4.0.0":
   version "4.0.0"

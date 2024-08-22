@@ -13,7 +13,7 @@
     "@nextui-org/react": "^2.4.6",
     "@rainbow-me/rainbowkit": "^2.1.4",
     "@tanstack/react-query": "^5.51.24",
-    "cc-sdk": "^1.0.0",
+    "cc-protocol-sdk": "^0.7.4",
     "chora-protocol-sdk": "^0.7.2",
     "copy-to-clipboard": "^3.3.3",
     "ethers": "^6.13.2",
