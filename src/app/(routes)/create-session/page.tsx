@@ -9,6 +9,8 @@ import {
 } from "wagmi";
 import { createCreatorClient } from "cc-protocol-sdk";
 import { TransactionReceipt } from "viem";
+import { Router } from "next/router";
+// import { useRouter } from "next/navigation";
 
 function Page() {
   const [name, setName] = useState("");
@@ -18,6 +20,7 @@ function Page() {
   const [jsonUri, setJsonUri] = useState("");
   const [contractAddress, setContractAddress] = useState(null);
   const [contractUri, setContractUri] = useState<string | null>(null);
+  // const router = useRouter();
 
   const { writeContractAsync } = useWriteContract();
   const { address } = useAccount();
@@ -103,18 +106,35 @@ function Page() {
 
         console.log("Transaction Hash:", txHash);
 
+        // // Retrieve the transaction receipt
+        // const transactionReceipt: TransactionReceipt =
+        //   await publicClient.getTransactionReceipt({
+        //     hash: txHash,
+        //   });
+        // console.log("Transaction Receipt:", transactionReceipt);
+
+        // Wait for the transaction to be processed
+        await new Promise((resolve) => setTimeout(resolve, 60000)); // Wait for 60 seconds (1 minute)
+
         // Retrieve the transaction receipt
         const transactionReceipt: TransactionReceipt =
           await publicClient.getTransactionReceipt({
             hash: txHash,
           });
+
         console.log("Transaction Receipt:", transactionReceipt);
 
         // Access the event logs
         const eventLogs = transactionReceipt.logs;
         console.log("Event Logs:", eventLogs);
+        console.log("Extract address from event Logs:", eventLogs[0].address);
 
         setContractAddress(contractAddress);
+        /*
+         if (eventLogs[0].address) {
+          router.push(`/watch/${eventLogs[0].address}`);
+        }
+        */
         console.log("Contract address set to:", contractAddress);
       } catch (error) {
         console.error("Error handling transaction:", error);
@@ -147,8 +167,7 @@ function Page() {
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
-            >
+              className="block text-sm font-medium text-gray-700">
               Name:
             </label>
             <input
@@ -163,8 +182,7 @@ function Page() {
           <div>
             <label
               htmlFor="description"
-              className="block text-sm font-medium text-gray-700"
-            >
+              className="block text-sm font-medium text-gray-700">
               Description:
             </label>
             <textarea
@@ -179,8 +197,7 @@ function Page() {
           <div>
             <label
               htmlFor="image"
-              className="block text-sm font-medium text-gray-700"
-            >
+              className="block text-sm font-medium text-gray-700">
               Choose Image:
             </label>
             <input
@@ -201,8 +218,7 @@ function Page() {
         <button
           onClick={handleCreateContract}
           disabled={loading}
-          className="mt-4 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-        >
+          className="mt-4 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50">
           {loading ? "Creating Contract..." : "Create Contract"}
         </button>
       </div>
