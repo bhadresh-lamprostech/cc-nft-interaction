@@ -106,6 +106,7 @@ function WatchComponentMain({ props }: { props: { id: string } }) {
     };
 
     const dummyCollection = "meetings";
+    console.log("Contract Address From Props", props.id);
 
     setData(dummyData);
     setCollection(dummyCollection);
@@ -113,37 +114,38 @@ function WatchComponentMain({ props }: { props: { id: string } }) {
 
   return (
     <>
-      {data ? (
-        <div className=" 1.7xl:ps-14 lg:ps-5 ps-4 xl:ps-10">
-          <div className="grid grid-cols-3 gap-y-4 gap-x-4 1.7xl:gap-x-6 pt-6 relative 1.7xl:pr-14 pr-4 lg:pr-5 xl-pr-10">
-            {/* Left side */}
-            <div className="sticky top-10 z-10 col-span-2 space-y-5 font-poppins pb-10">
-              <WatchSessionVideo
-                data={data}
-                collection={collection}
-                autoplay={true}
-                sessionDetails={sessionDetails}
-              />
-              <WatchSession
-                data={data}
-                collection={collection}
-                sessionDetails={sessionDetails}
-              />
-            </div>
+      {
+        data ? (
+          <div className=" 1.7xl:ps-14 lg:ps-5 ps-4 xl:ps-10">
+            <div className="grid grid-cols-3 gap-y-4 gap-x-4 1.7xl:gap-x-6 pt-6 relative 1.7xl:pr-14 pr-4 lg:pr-5 xl-pr-10">
+              {/* Left side */}
+              <div className="sticky top-10 z-10 col-span-2 space-y-5 font-poppins pb-10">
+                {/* <WatchSessionVideo
+                  data={data}
+                  collection={collection}
+                  autoplay={true}
+                  sessionDetails={sessionDetails}
+                /> */}
+                <WatchSession
+                  data={data}
+                  collection={collection}
+                  sessionDetails={sessionDetails}
+                />
+              </div>
 
-            {/* Right side */}
-            <div
-              className={`col-span-1 pb-8 ${styles.customScrollbar} gap-y-6 flex flex-col`}
-            >
-              <WatchFreeCollect />
-              <WatchLeaderBoard />
-              <WatchCollectibleInfo />
-              <WatchSocialLinks data={data} collection={collection} />
+              {/* Right side */}
+              <div
+                className={`col-span-1 pb-8 ${styles.customScrollbar} gap-y-6 flex flex-col`}
+              >
+                <WatchFreeCollect props={props} />
+                <WatchLeaderBoard />
+                <WatchCollectibleInfo />
+                <WatchSocialLinks data={data} collection={collection} />
+              </div>
             </div>
           </div>
-        </div>
-      ) : null
-      // <WatchComponentSkeletonLoader />
+        ) : null
+        // <WatchComponentSkeletonLoader />
       }
     </>
   );

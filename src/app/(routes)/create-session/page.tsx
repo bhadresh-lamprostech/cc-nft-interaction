@@ -7,9 +7,9 @@ import {
   usePublicClient,
   useWriteContract,
 } from "wagmi";
-import { createCreatorClient } from "cc-protocol-sdk";
+import { createCreatorClient } from "chora-protocol-sdk";
 import { TransactionReceipt } from "viem";
-import { Router } from "next/router";
+
 // import { useRouter } from "next/navigation";
 
 function Page() {
@@ -20,12 +20,13 @@ function Page() {
   const [jsonUri, setJsonUri] = useState("");
   const [contractAddress, setContractAddress] = useState(null);
   const [contractUri, setContractUri] = useState<string | null>(null);
+
+  const chainId = useChainId();
+  const publicClient = usePublicClient();
   // const router = useRouter();
 
   const { writeContractAsync } = useWriteContract();
   const { address } = useAccount();
-  const chainId = useChainId();
-  const publicClient = usePublicClient();
 
   const apiKey = "86ba1fec.216b5626254a406ba2c9801db2b4f8b7";
 
@@ -87,7 +88,7 @@ function Page() {
       const creatorClient = createCreatorClient({ chainId, publicClient });
 
       console.log("Creating contract with URI:", contractUri);
-      const { parameters, contractAddress } = await creatorClient.create1155({
+      const { parameters } = await creatorClient.create1155({
         contract: {
           name: name,
           uri: contractUri || "",
@@ -102,7 +103,7 @@ function Page() {
 
       try {
         // Send the transaction and get the transaction hash
-        const txHash: string = await writeContractAsync(parameters);
+        const txHash: `0x${string}` = await writeContractAsync(parameters);
 
         console.log("Transaction Hash:", txHash);
 
@@ -161,13 +162,14 @@ function Page() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
         <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
-          Upload to Lighthouse
+          Create Contract
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-gray-700">
+              className="block text-sm font-medium text-gray-700"
+            >
               Name:
             </label>
             <input
@@ -182,7 +184,8 @@ function Page() {
           <div>
             <label
               htmlFor="description"
-              className="block text-sm font-medium text-gray-700">
+              className="block text-sm font-medium text-gray-700"
+            >
               Description:
             </label>
             <textarea
@@ -197,7 +200,8 @@ function Page() {
           <div>
             <label
               htmlFor="image"
-              className="block text-sm font-medium text-gray-700">
+              className="block text-sm font-medium text-gray-700"
+            >
               Choose Image:
             </label>
             <input
@@ -218,7 +222,8 @@ function Page() {
         <button
           onClick={handleCreateContract}
           disabled={loading}
-          className="mt-4 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50">
+          className="mt-4 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+        >
           {loading ? "Creating Contract..." : "Create Contract"}
         </button>
       </div>

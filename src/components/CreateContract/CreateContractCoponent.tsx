@@ -26,7 +26,7 @@ const Create1155Contract = () => {
       const creatorClient = createCreatorClient({ chainId, publicClient });
 
       try {
-        const { parameters, contractAddress } = await creatorClient.create1155({
+        const { parameters } = await creatorClient.create1155({
           contract: {
             name: "Chora Club : Stone Garden2",
             uri: "ipfs://bafkreigzpzwwdx3xwl6fn7z2nzt636v3ih43com374fbdi6cxkst2v63oa",
@@ -61,7 +61,8 @@ const Create1155Contract = () => {
           borderRadius: "5px",
           cursor: isLoading ? "not-allowed" : "pointer",
         }}
-        disabled={isLoading}>
+        disabled={isLoading}
+      >
         {isLoading ? "Creating..." : "Create 1155 Contract"}
       </button>
 
